@@ -62,4 +62,19 @@ class DbHelper {
     }
     return listNotes;
   }
+
+  ///UPDATING THE DATA
+
+  Future<void> updateNotes(Notes_Model notesUpdate) async {
+    var db = await getDb();
+    await db.update(Note_table, notesUpdate.toMap(),
+        where: "$Column_id = ${notesUpdate.id}");
+  }
+
+  ///DELETING THE DATA
+
+  Future<void> deleteNotes(int id) async {
+    var db = await getDb();
+    await db.delete(Note_table, where: "$Column_id =  $id");
+  }
 }
