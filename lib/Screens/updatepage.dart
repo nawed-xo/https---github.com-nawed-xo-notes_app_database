@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:notes_app/Screens/homepage.dart';
+
 import 'package:notes_app/customWidget/customwidget.dart';
 import 'package:notes_app/databse/app_databse.dart';
 import 'package:notes_app/databse/notes_model.dart';
-import 'package:notes_app/Screens/homepage.dart';
+import 'package:notes_app/provider/app_provider.dart';
+import 'package:provider/provider.dart';
 
 class UpdatePage extends StatefulWidget {
   const UpdatePage({super.key});
@@ -13,20 +14,6 @@ class UpdatePage extends StatefulWidget {
 }
 
 class _UpdatePageState extends State<UpdatePage> {
-  DbHelper db = DbHelper.db;
-  List<Notes_Model> arrNotes = [];
-
-  void addNotes(String title, desc) async {
-    await db.addNotes(Notes_Model(title: title, desc: desc));
-    arrNotes = await db.fetchAlldata();
-    setState(() {});
-  }
-
-  void getAllNotes() async {
-    arrNotes = await db.fetchAlldata();
-    setState(() {});
-  }
-
   TextEditingController updateTitleController = TextEditingController();
   TextEditingController updateDescController = TextEditingController();
 
@@ -34,22 +21,25 @@ class _UpdatePageState extends State<UpdatePage> {
   Widget build(BuildContext context) {
 //////////
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: InkWell(
-                onTap: () {
-                  db.updateNotes(Notes_Model(
-                      title: updateTitleController.text,
-                      desc: updateDescController.text));
-                  getAllNotes();
-
-                  Navigator.pop(context);
-                },
-                child: Icon(Icons.save)),
+            child: Consumer(
+              builder: (_, value, __) {
+                return InkWell(
+                    onTap: () {
+                      context.read<notes_provider>().updateAllNotes(Notes_Model(
+                          title: updateDescController.text,
+                          desc: updateDescController.text));
+                      Provider.of<notes_provider>(context, listen: false)
+                          .getAllNotes();
+                      Navigator.pop(context);
+                    },
+                    child: Icon(Icons.save));
+              },
+            ),
           )
         ],
         backgroundColor: Colors.black,
